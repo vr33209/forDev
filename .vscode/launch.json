@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "All Tests",
+            "type": "dart",
+            "request": "launch",
+            "program": "test/", // or test/foo for a subset of tests
+        },
+        
+        {
+        "name": "Flutter",
+        "request": "launch",
+        "type": "dart"
+        }
+    ]
+}
