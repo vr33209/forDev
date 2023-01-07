@@ -26,9 +26,7 @@ class RemoteAuthentication {
       final httpResponse =
           await httpClient.request(url: url, method: method, body: body);
 
-      final account = RemoteAccountModel.fromJson(
-              httpResponse ?? {'accessToken': '', 'name': ''})
-          .toEntity();
+      final account = RemoteAccountModel.fromJson(httpResponse).toEntity();
 
       return account;
     } on HttpError catch (error) {
