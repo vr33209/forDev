@@ -1,3 +1,5 @@
+import '../models/remote_account_model.dart';
+
 import '../../domain/entities/account_entity.dart';
 
 import '../http/http.dart';
@@ -24,8 +26,9 @@ class RemoteAuthentication {
       final httpResponse =
           await httpClient.request(url: url, method: method, body: body);
 
-      final account = AccountEntity.fromJson(
-          httpResponse ?? {'accessToken': '', 'name': ''});
+      final account = RemoteAccountModel.fromJson(
+              httpResponse ?? {'accessToken': '', 'name': ''})
+          .toEntity();
 
       return account;
     } on HttpError catch (error) {
