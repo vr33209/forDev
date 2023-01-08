@@ -22,6 +22,15 @@ class HttpAdapter implements HttpClient {
     };
     final jsonBody = body != null ? jsonEncode(body) : null;
 
+    final List<dynamic> methodsAllowed = [
+      'get',
+      'post',
+      'put',
+      'delete',
+      'patch'
+    ];
+    if (!methodsAllowed.contains(method)) throw HttpError.serverError;
+
     final response = await client.post(Uri.parse(url ?? ''),
         headers: headers, body: jsonBody);
 
