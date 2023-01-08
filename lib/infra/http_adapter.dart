@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fordev/domain/helpers/domain_error.dart';
 import 'package:http/http.dart';
 
 import '../../data/http/http.dart';
@@ -20,6 +21,7 @@ class HttpAdapter implements HttpClient {
       'Accept': 'application/json'
     };
     final jsonBody = body != null ? jsonEncode(body) : null;
+
     final response = await client.post(Uri.parse(url ?? ''),
         headers: headers, body: jsonBody);
 
@@ -30,6 +32,8 @@ class HttpAdapter implements HttpClient {
     switch (response.statusCode) {
       case 200:
         return response.body.isEmpty ? null : jsonDecode(response.body);
+      case 400:
+        throw HttpError.badRequest;
       default:
         return null;
     }
