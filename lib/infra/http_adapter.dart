@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:fordev/domain/helpers/domain_error.dart';
 import 'package:http/http.dart';
 
 import '../../data/http/http.dart';
