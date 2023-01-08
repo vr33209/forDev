@@ -23,7 +23,13 @@ class HttpAdapter {
     final jsonBody = body != null ? jsonEncode(body) : null;
     final response =
         await client.post(Uri.parse(url), headers: headers, body: jsonBody);
-    return response.body.isEmpty ? null : jsonDecode(response.body);
+
+    switch (response.statusCode) {
+      case 200:
+        return response.body.isEmpty ? null : jsonDecode(response.body);
+      default:
+        return null;
+    }
   }
 }
 
@@ -98,6 +104,32 @@ void main() {
       when(() => client.post(any(),
           headers: any(named: 'headers'),
           body: any(named: 'body'))).thenAnswer((_) async => Response('', 200));
+
+      final response = await sut.request(
+        url: url,
+        method: 'post',
+      );
+
+      expect(response, null);
+    });
+
+    test('Should return data if post return 204', () async {
+      when(() => client.post(any(),
+          headers: any(named: 'headers'),
+          body: any(named: 'body'))).thenAnswer((_) async => Response('', 204));
+
+      final response = await sut.request(
+        url: url,
+        method: 'post',
+      );
+
+      expect(response, null);
+    });
+
+    test('Should return null if post return 204 with no data', () async {
+      when(() => client.post(any(),
+              headers: any(named: 'headers'), body: any(named: 'body')))
+          .thenAnswer((_) async => Response('{"any_key": "any_value"}', 204));
 
       final response = await sut.request(
         url: url,
