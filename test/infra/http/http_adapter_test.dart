@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fordev/data/http/http.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
 import 'package:faker/faker.dart';
@@ -20,7 +21,9 @@ class HttpAdapter {
       'Accept': 'application/json'
     };
     final jsonBody = body != null ? jsonEncode(body) : null;
-    await client.post(Uri.parse(url), headers: headers, body: jsonBody);
+    final response =
+        await client.post(Uri.parse(url), headers: headers, body: jsonBody);
+    return jsonDecode(response.body);
   }
 }
 
@@ -76,6 +79,19 @@ void main() {
             Uri.parse(url),
             headers: any(named: 'headers'),
           ));
+    });
+
+    test('Should return data if post return 200', () async {
+      when(() => client.post(any(),
+              headers: any(named: 'headers'), body: any(named: 'body')))
+          .thenAnswer((_) async => Response('{"any_key": "any_value"}', 200));
+
+      final response = await sut.request(
+        url: url,
+        method: 'post',
+      );
+
+      expect(response, {"any_key": "any_value"});
     });
   });
 }
