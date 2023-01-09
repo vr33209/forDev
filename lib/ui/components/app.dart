@@ -53,7 +53,7 @@ class App extends StatelessWidget {
         ),
       ),
       home: const Scaffold(
-        body: LoginPage(),
+        body: LoginPage(null),
       ),
     );
   }
