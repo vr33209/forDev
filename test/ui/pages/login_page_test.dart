@@ -18,24 +18,7 @@ void main() {
   late StreamController<String> mainErrorController;
   late StreamController<bool> isLoadingController;
 
-  setUp(() {
-    presenter = LoginPresenterSpy();
-    emailErrorController = StreamController<String>();
-    passwordErrorController = StreamController<String>();
-    isFormErrorController = StreamController<bool>();
-    mainErrorController = StreamController<String>();
-    isLoadingController = StreamController<bool>();
-  });
-
-  tearDown(() {
-    emailErrorController.close();
-    passwordErrorController.close();
-    isFormErrorController.close();
-    isLoadingController.close();
-    mainErrorController.close();
-  });
-
-  Future<void> loadPage(WidgetTester tester) async {
+  void mockStreams() {
     when(() => presenter.emailErrorStream)
         .thenAnswer((_) => emailErrorController.stream);
 
@@ -50,6 +33,31 @@ void main() {
 
     when(() => presenter.mainErrorStream)
         .thenAnswer((_) => mainErrorController.stream);
+  }
+
+  void closeStreams() {
+    emailErrorController.close();
+    passwordErrorController.close();
+    isFormErrorController.close();
+    isLoadingController.close();
+    mainErrorController.close();
+  }
+
+  setUp(() {
+    presenter = LoginPresenterSpy();
+    emailErrorController = StreamController<String>();
+    passwordErrorController = StreamController<String>();
+    isFormErrorController = StreamController<bool>();
+    mainErrorController = StreamController<String>();
+    isLoadingController = StreamController<bool>();
+  });
+
+  tearDown(() {
+    closeStreams();
+  });
+
+  Future<void> loadPage(WidgetTester tester) async {
+    mockStreams();
 
     final loginPage = MaterialApp(
       home: Scaffold(
