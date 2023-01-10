@@ -1,4 +1,5 @@
 import 'package:faker/faker.dart';
+import 'package:fordev/domain/entities/account_entity.dart';
 import 'package:fordev/domain/usecases/authentication.dart';
 import 'package:fordev/presentation/presenter/stream_login_presenter.dart';
 import 'package:fordev/presentation/protocols/protocols.dart';
@@ -15,10 +16,19 @@ void main() {
   late AuthenticationSpy authentication;
   late String email;
   late String password;
+  AuthenticationParams params = AuthenticationParams(
+      email: faker.internet.email(), secret: faker.internet.password());
 
   When mockValidationCall(String field) => when(() => validation.validate(
       field: field.isEmpty ? any(named: 'field') : field,
       value: any(named: 'value')));
+
+  When mockAuthenticationCall() => when(() => authentication.auth(any()));
+
+  void mockAuthentication() {
+    mockAuthenticationCall()
+        .thenAnswer((_) async => AccountEntity(faker.guid.guid()));
+  }
 
   void mockValidation({required String field, required dynamic responseMock}) {
     mockValidationCall(field).thenReturn(responseMock);
@@ -31,7 +41,13 @@ void main() {
         validation: validation, authentication: authentication);
     email = faker.internet.email();
     password = faker.internet.password();
+
     mockValidation(field: '', responseMock: '');
+    mockAuthentication();
+  });
+
+  setUpAll(() {
+    registerFallbackValue(params);
   });
 
   test('Should call Validation with correct email', () {
@@ -116,5 +132,14 @@ void main() {
 
     verify(() => authentication
         .auth(AuthenticationParams(email: email, secret: password))).called(1);
+  });
+
+  test('Should emit correct events on Authentication success', () async {
+    sut.validateEmail(email);
+    sut.validatePassword(password);
+
+    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
+
+    await sut.auth();
   });
 }
